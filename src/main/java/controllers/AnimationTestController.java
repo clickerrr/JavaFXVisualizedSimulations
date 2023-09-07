@@ -1,9 +1,11 @@
 package main.java.controllers;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import classes.AnimatedBFS;
 import classes.AnimatedCaveGeneration;
+import classes.AnimatedCreep;
 import classes.AnimatedDFS;
 import classes.Coordinate;
 import classes.GridElement;
@@ -34,9 +36,7 @@ public class AnimationTestController
 	private Coordinate startLocation;
 	private Coordinate endLocation;
 	
-	private AnimatedCaveGeneration animatedFill;
-	private AnimatedDFS animatedDFS;
-	private AnimatedDFS animatedBFS;
+	private ArrayList<Thread> activeThreads;
 	
 	private Random random;
 	
@@ -47,8 +47,8 @@ public class AnimationTestController
 		this.W = canvas.getWidth();
         this.H = canvas.getHeight();
         
-		gridSizeX = 150;
-		gridSizeY = 150;
+		gridSizeX = 50;
+		gridSizeY = 50;
 
 		rectWidth = W / gridSizeX;
 		rectHeight = H / gridSizeY;
@@ -61,6 +61,8 @@ public class AnimationTestController
 				grid[x][y] = new GridElement(x,y,Color.WHITE, true);
 			}
 		}
+		
+		activeThreads = new ArrayList<Thread>();
 		
 		this.startLocation = new Coordinate();
 		this.endLocation = new Coordinate();
@@ -84,8 +86,9 @@ public class AnimationTestController
 	private void generateNewCircleSubmit(Event e) throws InterruptedException
 	{
 		interruptAllThreads();
-		animatedFill = new AnimatedCaveGeneration("Thread 1", grid, gridSizeX, gridSizeY, startLocation, endLocation);
+		AnimatedCaveGeneration animatedFill = new AnimatedCaveGeneration("Thread 1", grid, gridSizeX, gridSizeY, startLocation, endLocation);
 		animatedFill.start();	
+		activeThreads.add(animatedFill);
 	}
 	
 	@FXML
@@ -96,6 +99,7 @@ public class AnimationTestController
 		endLocation.print();
 		AnimatedDFS animatedDFS = new AnimatedDFS("DFS Thread", grid, gridSizeX, gridSizeY, startLocation, endLocation);
 		animatedDFS.start();
+		activeThreads.add(animatedDFS);
 	}
 	
 	@FXML
@@ -104,9 +108,17 @@ public class AnimationTestController
 		interruptAllThreads();
 		AnimatedBFS animatedBFS = new AnimatedBFS("DFS Thread", grid, gridSizeX, gridSizeY, startLocation, endLocation);
 		animatedBFS.start();
+		activeThreads.add(animatedBFS);
 	}
 	
-	
+	@FXML
+	private void ant(Event e)
+	{
+		interruptAllThreads();
+		AnimatedCreep animatedCreep = new AnimatedCreep("Ant", grid, gridSizeX, gridSizeY, startLocation, endLocation);
+		animatedCreep.start();
+		activeThreads.add(animatedCreep);
+	}
 	
 	public void refreshGrid()
 	{
@@ -146,18 +158,7 @@ public class AnimationTestController
 	public void interruptAllThreads()
 	{
 		System.out.println("Interrupting all threads");
-		if(animatedFill != null)
-		{
-			animatedFill.interrupt();
-		}
-		if(animatedDFS != null)
-		{
-			animatedDFS.interrupt();
-		}
-		if(animatedBFS != null)
-		{
-			animatedBFS.interrupt();
-		}
+		activeThreads.forEach(thread -> { thread.interrupt(); });
 	}
 	@FXML
 	public void closeRequested(Event e)

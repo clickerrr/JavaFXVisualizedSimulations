@@ -37,8 +37,7 @@ public class AnimatedDFS extends Thread
 		}
 		catch (InterruptedException e) 
 		{
-
-			e.printStackTrace();
+			System.out.println(String.format("[%s]: %s", threadName, e.getMessage()));
 		}
 	}
 	
