@@ -114,7 +114,6 @@ public class AnimationTestController
 	@FXML
 	private void ant(Event e)
 	{
-		interruptAllThreads();
 		AnimatedCreep animatedCreep = new AnimatedCreep("Ant", grid, gridSizeX, gridSizeY, startLocation, endLocation);
 		animatedCreep.start();
 		activeThreads.add(animatedCreep);
