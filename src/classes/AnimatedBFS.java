@@ -75,6 +75,7 @@ public class AnimatedBFS extends Thread
 				if (ni >= 0 && ni < gridSizeX && nj >= 0 && nj < gridSizeY && !visited[ni][nj] && grid[ni][nj].alive) 
 				{ 
 					queue.add(new Coordinate(ni, nj));
+//					grid[ni][nj].color = Color.rgb(255, 0, 102);
 					grid[ni][nj].color = Color.RED;
 					visited[ni][nj] = true;
 				}

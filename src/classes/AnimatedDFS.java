@@ -60,7 +60,9 @@ public class AnimatedDFS extends Thread
 
         //mark the cell visited
         visited[x][y] = true;
-        grid[x][y].color = Color.RED;
+
+//		grid[x][y].color = Color.rgb(255, 0, 102);
+		grid[x][y].color = Color.RED;
         Thread.sleep((long)1);
 //        System.out.print(grid[x][y] + " ");
         DFSUtil(x+ 1, y,visited); // go right

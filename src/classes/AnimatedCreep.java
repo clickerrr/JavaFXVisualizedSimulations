@@ -31,7 +31,7 @@ public class AnimatedCreep extends Thread
 		this.startLocation = startLocation;
 		this.endLocation = endLocation;
 		this.random = new Random();
-		
+		this.currentLocation = new Coordinate(startLocation.x, startLocation.y);
 	}
 
 	@Override
@@ -47,26 +47,41 @@ public class AnimatedCreep extends Thread
 		}
 	}
 
-	public Queue<Coordinate> BFS(int startX, int startY) throws InterruptedException 
+	public int[][] BFS(int startX, int startY) throws InterruptedException 
 	{
-		boolean[][] visited = new boolean[gridSizeX][gridSizeY];
-	      
+		int[][] weight = new int[gridSizeX][gridSizeY];
+		for(int i = 0; i < gridSizeY; i++)
+		{
+			for(int j = 0; j < gridSizeX; j++)
+			{
+				weight[i][j] = -1;
+			}
+		}
+		
+		// have a weight map setup from the origin position
+		// weight at starting is 0
+		// weight in the surrounding is incremented by one, if it does not already have a weight
+		// keep going with the bfs and return the weight map
+		
+		
 	   // Define the directions for exploring neighbors (up, down, left, right)
 		int[] dr = {0, 0, 1, -1};
 		int[] dc = {1, -1, 0, 0};
 	   
 	   Queue<Coordinate> queue = new LinkedList<>();
-	   Queue<Coordinate> returnQueue = new LinkedList<>();
+	   
 	   queue.add(new Coordinate(startX, startY));
-	   visited[startX][startY] = true;
+	   weight[startX][startY] = 0;
+	   int currentWeight;
 	   
 	   while (!queue.isEmpty()) 
 	   {
 			Coordinate currentCell = queue.poll();
-			returnQueue.add(currentCell);
+			
 			int x =(int)currentCell.x;
 			int y = (int)currentCell.y;
 			  
+			currentWeight = weight[x][y];
 			//	      System.out.println("Visiting cell at (" + i + ", " + j + ")"); // Print the visited cell
 			  
 			for (int k = 0; k < 4; k++) 
@@ -75,20 +90,23 @@ public class AnimatedCreep extends Thread
 				int nj = y + dc[k];
 				
 				  // Check if the new cell (ni, nj) is within the grid boundaries
-				if (ni >= 0 && ni < gridSizeX && nj >= 0 && nj < gridSizeY && !visited[ni][nj] && grid[ni][nj].alive) 
+				if (ni >= 0 && ni < gridSizeX && nj >= 0 && nj < gridSizeY && weight[ni][nj] == -1 && grid[ni][nj].alive) 
 				{ 
+					
+					weight[ni][nj] = currentWeight + 1;
 					// found a red
-					// return closest red coordinate
+
 					if(grid[ni][nj].color == Color.RED)
 					{
-						return returnQueue;
+						return weight;
 					}
+					// return closest red coordinate
 					queue.add(new Coordinate(ni, nj));
-					visited[ni][nj] = true;
 				}
 			}
 
 		}
+	   
 	   return null;
 
 	}
@@ -96,65 +114,130 @@ public class AnimatedCreep extends Thread
 	public void updateLocation() throws InterruptedException
 	{
 
-		this.currentLocation = startLocation;
+
 		while(true)
 		{
-			Queue<Coordinate> moveTo = BFS(currentLocation.x, currentLocation.y);
-			if(moveTo != null)
+			int[][] weightMap = BFS(currentLocation.x, currentLocation.y);
+			if(weightMap != null)
 			{
-				while(!moveTo.isEmpty())
+				System.out.println("Weighted");
+				for(int y = 0; y < weightMap.length; y++)
 				{
-					System.out.println("Current Location");
-					currentLocation.print();
-					Coordinate nextCoordinate = moveTo.poll();
-
-					System.out.println("Next Location");
-					nextCoordinate.print();
-					move(nextCoordinate);	
-					Thread.sleep((long)(100));
+					System.out.print("[ ");
+					for(int x = 0; x < weightMap[y].length; x++)
+					{
+						if(x == currentLocation.x && y == currentLocation.y)
+						{
+							System.out.print("X ");
+						}
+						else
+						{
+							System.out.print(weightMap[x][y] + " ");
+						}
+					}
+					System.out.println("]");
 				}
+				traverseWeight(weightMap);
 			}
 			else
 			{
+				System.out.println("Random");
 				move();
 			}
-			Thread.sleep((long)(500));
+			Thread.sleep((long)(100));
 		}
 		
 		
 	}
-	public void move(Coordinate moveToCoordinate)
+	public void traverseWeight(int[][] weightMap)
 	{
-		int x = moveToCoordinate.x;
-		int y = moveToCoordinate.y;
+		int x = currentLocation.x;
+		int y = currentLocation.y;
+		
+		int[] dr = {0, 0, 1, -1};
+		int[] dc = {1, -1, 0, 0};
+		
+		ArrayList<Coordinate> adjacentList = new ArrayList<Coordinate>();
+		
+		for (int k = 0; k < 4; k++) 
+		{
+			int ni = x + dr[k];
+			int nj = y + dc[k];
+			if (ni >= 0 && ni < gridSizeX && nj >= 0 && nj < gridSizeY && weightMap[ni][nj] != -1 && grid[ni][nj].alive) 
+			{
+				adjacentList.add(new Coordinate(ni, nj));
+			}
+		}
+		
+		Coordinate lowestWeight = adjacentList.get(0);
+		ArrayList<Coordinate> lowestWeightList = new ArrayList<Coordinate>();
+		lowestWeightList.add(lowestWeight);
+		for(int i = 1; i < adjacentList.size(); i++) 
+		{
+			if(weightMap[lowestWeight.x][lowestWeight.y] > weightMap[adjacentList.get(i).x][adjacentList.get(i).y])
+			{
+				lowestWeightList.clear();
+				lowestWeight = adjacentList.get(i);
+				lowestWeightList.add(lowestWeight);
+			}
+			else
+			{
+				lowestWeightList.add(adjacentList.get(i));
+			}
+		}
+//		for (int k = 0; k < 4; k++) 
+//		{ // Four directions: up, down, left, right
+//			int ni = x + dr[k];
+//			int nj = y + dc[k];
+//			
+//			  // Check if the new cell (ni, nj) is within the grid boundaries
+//			if (ni >= 0 && ni < gridSizeX && nj >= 0 && nj < gridSizeY && weightMap[ni][nj] != -1 && grid[ni][nj].alive) 
+//			{ 
+//				if(weightMap[ni][nj] < weightMap[lowestWeight.x][lowestWeight.y])
+//				{
+//					lowestWeight.x = ni;
+//					lowestWeight.y = nj;
+//				}
+//				// found a red
+//				// return closest red coordinate
+//			}
+//		}
+		int randomIndex = random.nextInt(lowestWeightList.size() - 0) + 0;
+		Coordinate randomCoordinate = lowestWeightList.get(randomIndex);
+		
+		grid[x][y].color = Color.WHITE;
+		x = randomCoordinate.x;
+		y = randomCoordinate.y;
+		
+		grid[x][y].color = Color.GREEN;
+		
+	
+		currentLocation.x = x;
+		currentLocation.y = y;
 		
 		// timer loop
-		int xDir = 0;
-		int yDir = 0;
-		if(currentLocation.x < x)
-			xDir = 1;
-		else if(currentLocation.x > x)
-			xDir = -1;
-		if(currentLocation.y < y)
-			yDir = 1;
-		else if(currentLocation.y > y)
-			yDir = -1;
-
-		grid[currentLocation.x][currentLocation.y].color = Color.WHITE;
-		currentLocation.x = x + xDir;
-		currentLocation.y = y + yDir;
-		grid[x][y].color = Color.GREEN;
-
-
-		
+//		int xDir = 0;
+//		int yDir = 0;
+//		if(currentLocation.x < x)
+//			xDir = 1;
+//		else if(currentLocation.x > x)
+//			xDir = -1;
+//		if(currentLocation.y < y)
+//			yDir = 1;
+//		else if(currentLocation.y > y)
+//			yDir = -1;
+//
+//		grid[currentLocation.x][currentLocation.y].color = Color.WHITE;
+//		currentLocation.x = x + xDir;
+//		currentLocation.y = y + yDir;
+//		grid[x][y].color = Color.GREEN;		
 		
 	}
 	
 	public void move() throws InterruptedException
 	{
-		int x = startLocation.x;
-		int y = startLocation.y;
-		this.currentLocation = new Coordinate(x, y);
+		int x = currentLocation.x;
+		int y = currentLocation.y;
 		
 		// timer loop
 		
@@ -184,11 +267,5 @@ public class AnimatedCreep extends Thread
 		currentLocation.y = y;
 			
 	}
-	
-	public void chooseDirection()
-	{
-
-	}
-	
 	
 }
