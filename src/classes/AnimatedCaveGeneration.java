@@ -44,6 +44,10 @@ public class AnimatedCaveGeneration extends Thread
 	
 	public void generateMaze() throws InterruptedException
 	{
+		startLocation.x = -1;
+		startLocation.y = -1;
+		endLocation.x = -1;
+		endLocation.y = -1;
 		double chanceToStartAlive = .45;
 
 		for(int y = 0; y < gridSizeY; y++)

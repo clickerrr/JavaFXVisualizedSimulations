@@ -26,7 +26,7 @@
                         <center>
                            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                               <children>
-                                 <Button mnemonicParsing="false" onAction="#generateNewCircleSubmit" text="Generate Obstacles">
+                                 <Button mnemonicParsing="false" onAction="#generateObstacles" text="Generate Obstacles">
                                     <HBox.margin>
                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                     </HBox.margin></Button>

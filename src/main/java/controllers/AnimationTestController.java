@@ -79,11 +79,10 @@ public class AnimationTestController
 	    };
 	    timer.start();
     
-//        printGrid();
 	}
 	
 	@FXML
-	private void generateNewCircleSubmit(Event e) throws InterruptedException
+	private void generateObstacles(Event e) throws InterruptedException
 	{
 		interruptAllThreads();
 		AnimatedCaveGeneration animatedFill = new AnimatedCaveGeneration("Thread 1", grid, gridSizeX, gridSizeY, startLocation, endLocation);
@@ -128,6 +127,12 @@ public class AnimationTestController
 			for(int x = 0; x < gridSizeX; x++)
 			{
 				gc.setFill(grid[x][y].color);
+
+				if(startLocation.x != -1 && startLocation.y != -1)
+				{
+					grid[startLocation.x][startLocation.y].color = Color.BLUE;	
+				}
+				
 				gc.fillRect(grid[x][y].x * rectWidth, grid[x][y].y * rectHeight, rectWidth, rectHeight);
 			}
 		}
