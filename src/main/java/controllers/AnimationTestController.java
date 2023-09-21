@@ -14,6 +14,8 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.paint.Color;
 
 public class AnimationTestController 
@@ -41,8 +43,22 @@ public class AnimationTestController
 	private Random random;
 	
 	@FXML
+	private Spinner<Integer> simStepsSpinner, deathMinSpinner, birthMinSpinner;
+
+	
+	@FXML
 	public void initialize()
 	{
+		
+		simStepsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 4));
+		simStepsSpinner.increment();
+		
+		deathMinSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 1));
+		deathMinSpinner.increment();
+		
+		birthMinSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 3));
+		birthMinSpinner.increment();
+		
 		this.random = new Random();
 		this.W = canvas.getWidth();
         this.H = canvas.getHeight();
@@ -79,6 +95,14 @@ public class AnimationTestController
 	    };
 	    timer.start();
     
+	}
+	
+	@FXML
+	private void handleSpinnerUpdate(Event e)
+	{
+		AnimatedCaveGeneration.simulationSteps = simStepsSpinner.getValue();
+		AnimatedCaveGeneration.birthMinimum = birthMinSpinner.getValue();
+		AnimatedCaveGeneration.deathMinimum = deathMinSpinner.getValue();
 	}
 	
 	@FXML

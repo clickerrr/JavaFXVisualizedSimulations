@@ -2,6 +2,8 @@ package classes;
 
 import java.util.Random;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.Spinner;
 import javafx.scene.paint.Color;
 
 public class AnimatedCaveGeneration extends Thread
@@ -15,6 +17,11 @@ public class AnimatedCaveGeneration extends Thread
 	public Coordinate endLocation;
 	
 	private Random random;
+
+	public static int simulationSteps = 5;
+	public static int birthMinimum = 4;
+	public static int deathMinimum = 2;
+	
 	
 	public AnimatedCaveGeneration(String threadName, GridElement[][] grid, int gridSizeX, int gridSizeY, Coordinate startLocation, Coordinate endLocation)
 	{
@@ -74,7 +81,7 @@ public class AnimatedCaveGeneration extends Thread
 		
 		}
 		
-		for(int i = 0; i < 10; i++)
+		for(int i = 0; i < simulationSteps; i++)
 		{
 			Thread.sleep((long)100);
 			doObstacleStep();
@@ -85,9 +92,7 @@ public class AnimatedCaveGeneration extends Thread
 	public void doObstacleStep()
 	{	
 		GridElement[][] copyGrid = grid.clone();
-		
-		int deathMinimum = 3;
-		int birthMinimum = 4;
+
 		for(int y = 0; y < gridSizeY; y++)
 		{
 			for(int x = 0; x < gridSizeX; x++)
