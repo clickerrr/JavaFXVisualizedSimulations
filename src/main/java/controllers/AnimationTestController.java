@@ -12,16 +12,31 @@ import classes.GridElement;
 import javafx.animation.AnimationTimer;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 public class AnimationTestController 
 {
 	@FXML 
 	private Canvas canvas;
+	@FXML
+	private Button showDfsButton;
+	@FXML
+	private Button showBfsButton;
+	@FXML
+	private Button antButton;
+	
+	@FXML
+	private CheckBox wallBreaker;
+	
+	private ArrayList<Node> disabledNodeList;
 	
 	private double W;
 	private double H;
@@ -49,6 +64,11 @@ public class AnimationTestController
 	@FXML
 	public void initialize()
 	{
+		disabledNodeList = new ArrayList<Node>();
+		disabledNodeList.add(showDfsButton);
+		disabledNodeList.add(showBfsButton);
+		disabledNodeList.add(antButton);
+		disabledNodeList.add(wallBreaker);
 		
 		simStepsSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 4));
 		simStepsSpinner.increment();
@@ -112,7 +132,49 @@ public class AnimationTestController
 		AnimatedCaveGeneration animatedFill = new AnimatedCaveGeneration("Thread 1", grid, gridSizeX, gridSizeY, startLocation, endLocation);
 		animatedFill.start();	
 		activeThreads.add(animatedFill);
+
+		disabledNodeList.forEach( (disabledNode) -> { if(disabledNode.isDisable()) {disabledNode.setDisable(false); } });
 	}
+	
+	@FXML
+	private void handleCanvasClick(Event e)
+	{
+		MouseEvent event = (MouseEvent)e;
+
+		double x = event.getX();
+		double y = event.getY();
+	
+		if(wallBreaker.isSelected())
+		{
+			System.out.println(String.format("[%f, %f]", x, y));
+
+			// format x, y
+			Coordinate grid = convertCanvasPosToGrid(x, y);
+
+			System.out.println(String.format("[%d, %d]", grid.getX(), grid.getY()));
+
+			wallBreaker(grid.x, grid.y);
+		}
+		
+
+	}
+	
+	private void wallBreaker(int x, int y)
+	{
+		if(!grid[x][y].alive)
+		{
+			grid[x][y].alive = true;
+			grid[x][y].color = Color.WHITE;
+		}
+	}
+	
+	private Coordinate convertCanvasPosToGrid(double x, double y)
+	{
+
+		Coordinate gridPos = new Coordinate((int)(x / rectWidth), (int)(y / rectHeight));
+		return gridPos;
+	}
+
 	
 	@FXML
 	private void showDFS(Event e)
