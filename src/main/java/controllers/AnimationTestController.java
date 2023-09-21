@@ -9,6 +9,7 @@ import classes.AnimatedCreep;
 import classes.AnimatedDFS;
 import classes.Coordinate;
 import classes.GridElement;
+import classes.NodeType;
 import javafx.animation.AnimationTimer;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -21,6 +22,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class AnimationTestController 
 {
@@ -35,6 +37,9 @@ public class AnimationTestController
 	
 	@FXML
 	private CheckBox wallBreaker;
+	
+	@FXML
+	private Rectangle obstacleNode, redNode;
 	
 	private ArrayList<Node> disabledNodeList;
 	
@@ -54,6 +59,10 @@ public class AnimationTestController
 	private Coordinate endLocation;
 	
 	private ArrayList<Thread> activeThreads;
+	private NodeType selectedNode;
+	private NodeType obstacleNodeInfo = new NodeType("obstacle", Color.BLACK);
+	private NodeType redNodeInfo = new NodeType("red", Color.RED);
+	
 	
 	private Random random;
 	
@@ -64,6 +73,7 @@ public class AnimationTestController
 	@FXML
 	public void initialize()
 	{
+		selectedNode = obstacleNodeInfo;
 		disabledNodeList = new ArrayList<Node>();
 		disabledNodeList.add(showDfsButton);
 		disabledNodeList.add(showBfsButton);
@@ -83,8 +93,8 @@ public class AnimationTestController
 		this.W = canvas.getWidth();
         this.H = canvas.getHeight();
         
-		gridSizeX = 50;
-		gridSizeY = 50;
+		gridSizeX = 100;
+		gridSizeY = 100;
 
 		rectWidth = W / gridSizeX;
 		rectHeight = H / gridSizeY;
@@ -146,16 +156,30 @@ public class AnimationTestController
 	
 		if(wallBreaker.isSelected())
 		{
-			System.out.println(String.format("[%f, %f]", x, y));
-
-			// format x, y
+			
 			Coordinate grid = convertCanvasPosToGrid(x, y);
-
-			System.out.println(String.format("[%d, %d]", grid.getX(), grid.getY()));
-
-			wallBreaker(grid.x, grid.y);
+			if( grid != null)
+			{
+				wallBreaker(grid.x, grid.y);	
+			}
 		}
-		
+
+	}
+	
+	@FXML
+	private void handleCanvasDrag(Event e)
+	{
+		MouseEvent event = (MouseEvent)e;
+
+		double x = event.getX();
+		double y = event.getY();
+
+
+		Coordinate grid = convertCanvasPosToGrid(x, y);
+		if( grid != null)
+		{
+			painter(grid.x, grid.y);	
+		}
 
 	}
 	
@@ -168,13 +192,51 @@ public class AnimationTestController
 		}
 	}
 	
+	private void painter(int x, int y)
+	{
+		if(!grid[x][y].color.equals(selectedNode.nodeColor) && grid[x][y].alive)
+		{
+			grid[x][y].color = selectedNode.nodeColor;
+			if(grid[x][y].color.equals(Color.BLACK))
+			{
+				grid[x][y].alive = false;
+			}
+		}
+
+	}
+	
 	private Coordinate convertCanvasPosToGrid(double x, double y)
 	{
 
 		Coordinate gridPos = new Coordinate((int)(x / rectWidth), (int)(y / rectHeight));
+		if( gridPos.x >= gridSizeX || gridPos.x < 0 || gridPos.y >= gridSizeY || gridPos.y < 0)
+			return null;
 		return gridPos;
 	}
 
+	@FXML
+	private void handleNodeSelection(Event e)
+	{
+		MouseEvent event = (MouseEvent)e;
+		Rectangle source = (Rectangle)event.getSource();
+		
+		switch(source.getId())
+		{
+		case "obstacleNode":
+			this.selectedNode = obstacleNodeInfo;
+
+			this.redNode.setStrokeWidth(0);
+
+			this.obstacleNode.setStrokeWidth(2);
+			break;
+		case "redNode":
+			this.selectedNode = redNodeInfo;
+			this.obstacleNode.setStrokeWidth(0);
+			this.redNode.setStrokeWidth(2);
+			break;
+		}
+		System.out.println(source.getId());
+	}
 	
 	@FXML
 	private void showDFS(Event e)

@@ -15,7 +15,7 @@ public class RunJavafx extends Application
 		
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
 		System.out.print("");
-		loader.setController(new MainController());
+//		loader.setController(new MainController());
 		
 		loader = new FXMLLoader(getClass().getResource("/fxml/animationTest.fxml"));
 		System.out.print("");
