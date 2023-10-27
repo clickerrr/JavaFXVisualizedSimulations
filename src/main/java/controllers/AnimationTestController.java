@@ -17,6 +17,7 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.input.MouseEvent;
@@ -33,6 +34,10 @@ public class AnimationTestController
 	private Button showBfsButton;
 	@FXML
 	private Button antButton;
+	@FXML
+	private Label antCount;
+	
+	private int antCounter = 0;
 	
 	@FXML
 	private CheckBox wallBreaker;
@@ -58,6 +63,8 @@ public class AnimationTestController
 	@FXML
 	public void initialize()
 	{
+
+		antCount.setText("");
 		selectedNode = obstacleNodeInfo;
 		disabledNodeList = new ArrayList<Node>();
 		disabledNodeList.add(showDfsButton);
@@ -220,6 +227,9 @@ public class AnimationTestController
 			AnimatedCreep animatedCreep = new AnimatedCreep("Ant");
 			animatedCreep.start();
 			activeThreads.add(animatedCreep);
+
+			antCounter++;
+			antCount.setText("Ant Count: " + antCounter);
 		}
 		else
 		{
@@ -230,7 +240,31 @@ public class AnimationTestController
 	public void interruptAllThreads()
 	{
 		System.out.println("Interrupting all threads");
-		activeThreads.forEach(thread -> { thread.interrupt(); });
+		activeThreads.forEach(thread -> 
+		{ 
+			
+			try
+			{
+				if(thread.getClass() == AnimatedCreep.class)
+				{
+					if(antCounter > 0)
+					{
+						antCounter--;
+					}
+					if(antCounter == 0)
+					{
+						antCount.setText("");
+					}
+				}
+			}
+			catch(ClassCastException e)
+			{
+				
+			}
+			thread.interrupt(); 
+			
+		
+		});
 	}
 	
 	@FXML

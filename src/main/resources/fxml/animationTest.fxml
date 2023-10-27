@@ -14,7 +14,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.stage.Stage?>
 
-<Stage onCloseRequest="#closeRequested" resizable="false" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Stage onCloseRequest="#closeRequested" resizable="false" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
     <scene>
         <Scene>
             <AnchorPane prefHeight="600.0" prefWidth="600.0">
@@ -76,6 +76,7 @@
                                        </VBox>
                                        <VBox alignment="CENTER" prefHeight="90.0" prefWidth="102.0">
                                           <children>
+                                             <Label fx:id="antCount" text="Ant Count: " />
                                              <Label text="Birth Minimum" />
                                              <Spinner fx:id="birthMinSpinner" onMouseClicked="#handleSpinnerUpdate" prefHeight="26.0" prefWidth="55.0">
                                                 <VBox.margin>

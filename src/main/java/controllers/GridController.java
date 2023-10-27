@@ -24,8 +24,8 @@ public class GridController
 	private GraphicsContext graphicsContext;
 
 
-	public static final int GRID_SIZE_X = 250;
-	public static final int GRID_SIZE_Y = 250;
+	public static final int GRID_SIZE_X = 150;
+	public static final int GRID_SIZE_Y = 150;
 	
 	private double RECT_WIDTH = canvasWidth / GRID_SIZE_X;
 	private double RECT_HEIGHT = canvasHeight / GRID_SIZE_Y;

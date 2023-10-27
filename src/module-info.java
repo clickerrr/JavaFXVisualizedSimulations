@@ -1,10 +1,8 @@
-
-module PathfindingVisualization 
-{
-	opens main.java to javafx.base, javafx.controls, javafx.fxml, javafx.swing, javafx.graphics;
-	opens main.java.controllers to javafx.fxml;
-	requires javafx.fxml;
+module PathfindingVisualization {
 	requires javafx.graphics;
+	requires javafx.fxml;
 	requires javafx.controls;
-	requires javafx.base;
+	opens main.java to javafx.graphics, javafx.fxml, javafx.controls;
+	opens main.java.controllers to javafx.graphics, javafx.fxml, javafx.controls;
+	opens classes to javafx.graphics, javafx.fxml, javafx.controls;
 }
