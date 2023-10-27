@@ -169,6 +169,11 @@ public class AnimationTestController
 		Coordinate grid = gridController.convertCanvasPosToGrid(x, y);
 		if( grid != null)
 		{
+			if(wallBreaker.isSelected())
+			{
+				gridController.wallBreaker(grid.x, grid.y);	
+				return;
+			}
 			gridController.painter(grid.x, grid.y, selectedNode.nodeColor);	
 		}
 

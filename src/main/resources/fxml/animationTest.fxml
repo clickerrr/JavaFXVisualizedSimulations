@@ -17,41 +17,49 @@
 <Stage onCloseRequest="#closeRequested" resizable="false" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
     <scene>
         <Scene>
-            <AnchorPane prefHeight="600.0" prefWidth="600.0">
+            <AnchorPane prefHeight="720.0" prefWidth="1280.0">
             <children>
                <BorderPane prefHeight="750.0" prefWidth="750.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                  <top>
-                     <Canvas fx:id="canvas" height="600.0" onMouseClicked="#handleCanvasClick" onMouseDragged="#handleCanvasDrag" width="600.0" BorderPane.alignment="CENTER">
-                        <BorderPane.margin>
-                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                        </BorderPane.margin></Canvas>
-                  </top>
-                  <bottom>
-                     <BorderPane prefHeight="76.0" prefWidth="621.0" BorderPane.alignment="CENTER">
+                  <left>
+                     <BorderPane prefHeight="720.0" prefWidth="321.0" BorderPane.alignment="CENTER">
                         <center>
-                           <VBox BorderPane.alignment="CENTER">
+                           <VBox alignment="CENTER" prefHeight="720.0" prefWidth="562.0" BorderPane.alignment="CENTER">
                               <children>
-                                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                                 <VBox alignment="CENTER_LEFT" prefWidth="491.0">
                                     <children>
-                                       <Button mnemonicParsing="false" onAction="#generateObstacles" text="Generate Obstacles">
-                                          <HBox.margin>
-                                             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                          </HBox.margin>
+                                       <Button mnemonicParsing="false" onAction="#generateObstacles" prefWidth="120.0" text="Generate Obstacles">
+                                          <VBox.margin>
+                                             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                                          </VBox.margin>
                                        </Button>
-                                       <Button fx:id="showDfsButton" disable="true" mnemonicParsing="false" onAction="#showDFS" text="Show DFS">
-                                          <HBox.margin>
-                                             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                          </HBox.margin>
+                                       <Button fx:id="showDfsButton" disable="true" mnemonicParsing="false" onAction="#showDFS" prefHeight="25.0" prefWidth="120.0" text="Show DFS">
+                                          <VBox.margin>
+                                             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                                          </VBox.margin>
                                        </Button>
-                                       <Button fx:id="showBfsButton" disable="true" mnemonicParsing="false" onAction="#showBFS" text="Show BFS" />
-                                       <Button fx:id="antButton" disable="true" mnemonicParsing="false" onAction="#ant" text="Ant!">
-                                          <HBox.margin>
-                                             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                          </HBox.margin>
+                                       <Button fx:id="showBfsButton" disable="true" mnemonicParsing="false" onAction="#showBFS" prefWidth="120.0" text="Show BFS">
+                                          <VBox.margin>
+                                             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                                          </VBox.margin>
                                        </Button>
-                                       <CheckBox fx:id="wallBreaker" disable="true" mnemonicParsing="false" text="Wallbreaker" />
+                                       <Button fx:id="antButton" disable="true" mnemonicParsing="false" onAction="#ant" prefWidth="120.0" text="Ant!">
+                                          <VBox.margin>
+                                             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                                          </VBox.margin>
+                                       </Button>
+                                       <CheckBox fx:id="wallBreaker" alignment="CENTER" disable="true" mnemonicParsing="false" prefWidth="120.0" text="Wallbreaker">
+                                          <VBox.margin>
+                                             <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                                          </VBox.margin>
+                                       </CheckBox>
                                     </children>
-                                 </HBox>
+                                    <padding>
+                                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                    </padding>
+                                    <VBox.margin>
+                                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                    </VBox.margin>
+                                 </VBox>
                                  <HBox alignment="CENTER">
                                     <children>
                                        <VBox alignment="CENTER" prefHeight="90.0" prefWidth="102.0">
@@ -86,6 +94,9 @@
                                           </children>
                                        </VBox>
                                     </children>
+                                    <VBox.margin>
+                                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                    </VBox.margin>
                                  </HBox>
                                  <HBox alignment="CENTER">
                                     <children>
@@ -110,12 +121,24 @@
                                           </children>
                                        </VBox>
                                     </children>
+                                    <VBox.margin>
+                                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                    </VBox.margin>
                                  </HBox>
                               </children>
+                              <BorderPane.margin>
+                                 <Insets />
+                              </BorderPane.margin>
                            </VBox>
                         </center>
                      </BorderPane>
-                  </bottom>
+                  </left>
+                  <center>
+                     <Canvas fx:id="canvas" height="700.0" onMouseClicked="#handleCanvasClick" onMouseDragged="#handleCanvasDrag" width="700.0" BorderPane.alignment="CENTER">
+                        <BorderPane.margin>
+                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                        </BorderPane.margin></Canvas>
+                  </center>
                </BorderPane>
             </children></AnchorPane>
         </Scene>
