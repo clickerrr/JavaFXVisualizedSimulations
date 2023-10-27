@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import main.java.controllers.AnimationTestController;
-import main.java.controllers.MainController;
 
 public class RunJavafx extends Application
 {

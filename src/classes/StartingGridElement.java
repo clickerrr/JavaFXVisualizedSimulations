@@ -4,8 +4,8 @@ import javafx.scene.paint.Color;
 
 public class StartingGridElement extends GridElement
 {
-	public StartingGridElement(double x, double y) 
+	public StartingGridElement(int x, int y, CanvasCoordinate canvasCoor) 
 	{
-		super(x, y, Color.BLUE, true);
+		super(x, y, Color.BLUE, true, canvasCoor);
 	}	
 }

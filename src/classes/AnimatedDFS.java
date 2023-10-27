@@ -3,29 +3,19 @@ package classes;
 import java.util.Random;
 
 import javafx.scene.paint.Color;
+import main.java.controllers.GridController;
 
 public class AnimatedDFS extends Thread
 {
 	private String threadName;
-	
-	private GridElement[][] grid;
-	private int gridSizeX;
-	private int gridSizeY;
-	
-	public Coordinate startLocation;
-	public Coordinate endLocation;
-	
+	private GridController gridController;
 	private Random random;
 	
-	public AnimatedDFS(String threadName, GridElement[][] grid, int gridSizeX, int gridSizeY, Coordinate startLocation, Coordinate endLocation)
+	public AnimatedDFS(String threadName)
 	{
 		this.threadName = threadName;
-		this.grid = grid;
-		this.gridSizeX = gridSizeX;
-		this.gridSizeY = gridSizeY;
-		this.startLocation = startLocation;
-		this.endLocation = endLocation;
 		this.random = new Random();
+		this.gridController = GridController.getInstance();
 		
 	}
 	@Override
@@ -44,25 +34,24 @@ public class AnimatedDFS extends Thread
 	public void DFS() throws InterruptedException 
 	{
         //created visited array
-        boolean [][] visited = new boolean[gridSizeX][gridSizeY];
+        boolean [][] visited = new boolean[gridController.GRID_SIZE_X][gridController.GRID_SIZE_Y];
         System.out.println(String.format("[%s] Running Depth-First Search", threadName));
-        DFSUtil(startLocation.x, startLocation.y, visited);
+        DFSUtil(gridController.getStartLocation().x, gridController.getStartLocation().y, visited);
     }
 
     public void DFSUtil(int x, int y, boolean[][] visited) throws InterruptedException
     {
 
-    	int W = gridSizeX;
-        int H = gridSizeY;
+    	
 
-        if (x < 0 || y < 0 || x >= W || y >= H || visited[x][y] || !grid[x][y].alive || new Coordinate(x,y).equals(endLocation))
+        if (!gridController.confirmValidCoordinate(x, y) || visited[x][y] || !gridController.getCellStatus(x, y) || new Coordinate(x,y).equals(gridController.getEndLocation()))
             return;
 
         //mark the cell visited
         visited[x][y] = true;
 
 //		grid[x][y].color = Color.rgb(255, 0, 102);
-		grid[x][y].color = Color.RED;
+		gridController.updateCell(x, y, Color.RED);
         Thread.sleep((long)1);
 //        System.out.print(grid[x][y] + " ");
         DFSUtil(x+ 1, y,visited); // go right

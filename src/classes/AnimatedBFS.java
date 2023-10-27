@@ -1,35 +1,24 @@
 package classes;
 
+
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
-import javafx.scene.control.Cell;
 import javafx.scene.paint.Color;
+import main.java.controllers.GridController;
 
 public class AnimatedBFS extends Thread
 {
 	private String threadName;
-	
-	private GridElement[][] grid;
-	private int gridSizeX;
-	private int gridSizeY;
-	
-	public Coordinate startLocation;
-	public Coordinate endLocation;
-	
+	private GridController gridController;
 	private Random random;
 	
-	public AnimatedBFS(String threadName, GridElement[][] grid, int gridSizeX, int gridSizeY, Coordinate startLocation, Coordinate endLocation)
+	public AnimatedBFS(String threadName)
 	{
-		this.threadName = threadName;
-		this.grid = grid;
-		this.gridSizeX = gridSizeX;
-		this.gridSizeY = gridSizeY;
-		this.startLocation = startLocation;
-		this.endLocation = endLocation;
+		this.threadName = threadName;		
 		this.random = new Random();
-		
+		this.gridController = GridController.getInstance();
 	}
 
 	@Override
@@ -37,7 +26,7 @@ public class AnimatedBFS extends Thread
 	{
 		try 
 		{
-			BFS(startLocation.x, startLocation.y);
+			BFS(gridController.getStartLocation().x, gridController.getStartLocation().y);
 		} 
 		catch (InterruptedException e) 
 		{
@@ -47,6 +36,8 @@ public class AnimatedBFS extends Thread
 	
 	public void BFS(int startX, int startY) throws InterruptedException 
 	{
+		int gridSizeX = GridController.GRID_SIZE_X;
+		int gridSizeY = GridController.GRID_SIZE_Y;
 		boolean[][] visited = new boolean[gridSizeX][gridSizeY];
 	      
 	   // Define the directions for exploring neighbors (up, down, left, right)
@@ -72,11 +63,12 @@ public class AnimatedBFS extends Thread
 				int nj = y + dc[k];
 				     
 				  // Check if the new cell (ni, nj) is within the grid boundaries
-				if (ni >= 0 && ni < gridSizeX && nj >= 0 && nj < gridSizeY && !visited[ni][nj] && grid[ni][nj].alive) 
+				if (ni >= 0 && ni < gridSizeX && nj >= 0 && nj < gridSizeY && !visited[ni][nj] && gridController.getCellStatus(ni, nj)) 
 				{ 
 					queue.add(new Coordinate(ni, nj));
 //					grid[ni][nj].color = Color.rgb(255, 0, 102);
-					grid[ni][nj].color = Color.RED;
+					
+					gridController.updateCell(ni, nj, Color.RED);
 					visited[ni][nj] = true;
 				}
 			}

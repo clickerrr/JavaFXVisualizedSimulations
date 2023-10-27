@@ -7,32 +7,24 @@ import java.util.Random;
 import java.util.Stack;
 
 import javafx.scene.paint.Color;
+import main.java.controllers.GridController;
 
 public class AnimatedCreep extends Thread 
 {
 	private String threadName;
 	
-	private GridElement[][] grid;
-	private int gridSizeX;
-	private int gridSizeY;
-	
-	public Coordinate startLocation;
-	public Coordinate endLocation;
+	private GridController gridController;
 	
 	private Coordinate currentLocation;
 	
 	private Random random;
 	
-	public AnimatedCreep(String threadName, GridElement[][] grid, int gridSizeX, int gridSizeY, Coordinate startLocation, Coordinate endLocation)
+	public AnimatedCreep(String threadName)
 	{
 		this.threadName = threadName;
-		this.grid = grid;
-		this.gridSizeX = gridSizeX;
-		this.gridSizeY = gridSizeY;
-		this.startLocation = startLocation;
-		this.endLocation = endLocation;
+		this.gridController = GridController.getInstance();
 		this.random = new Random();
-		this.currentLocation = new Coordinate(startLocation.x, startLocation.y);
+		this.currentLocation = new Coordinate(gridController.getStartLocation().x, gridController.getStartLocation().y);
 	}
 
 	@Override
@@ -50,6 +42,8 @@ public class AnimatedCreep extends Thread
 
 	public Stack<Coordinate> BFS(int startX, int startY) throws InterruptedException 
 	{
+		int gridSizeX = GridController.GRID_SIZE_X;
+		int gridSizeY = GridController.GRID_SIZE_Y;
 		int[][] weight = new int[gridSizeX][gridSizeY];
 		for(int i = 0; i < gridSizeY; i++)
 		{
@@ -94,12 +88,12 @@ public class AnimatedCreep extends Thread
 				int nj = y + dc[k];
 				
 				  // Check if the new cell (ni, nj) is within the grid boundaries
-				if (ni >= 0 && ni < gridSizeX && nj >= 0 && nj < gridSizeY && weight[ni][nj] == -1 && grid[ni][nj].alive) 
+				if (gridController.confirmValidCoordinate(ni, nj) && weight[ni][nj] == -1 && gridController.getCellStatus(ni, nj)) 
 				{ 
 					
 					weight[ni][nj] = currentWeight + 1;
 					// found a red
-					if(grid[ni][nj].color == Color.RED)
+					if(gridController.getCellColor(ni, nj) == Color.RED)
 					{
 						return backTrackPath(new Coordinate(ni, nj), new Coordinate(startX, startY), weight);
 					}
@@ -135,7 +129,7 @@ public class AnimatedCreep extends Thread
 				int nx = x + dr[k];
 				int ny = y + dc[k];
 
-				if(nx >= 0 && nx < gridSizeX && ny >= 0 && ny < gridSizeY && weightMap[x][ny] != -1 && weightMap[nx][ny] != -1 && weightMap[newCoordinate.x][newCoordinate.y] > weightMap[nx][ny])
+				if(gridController.confirmValidCoordinate(nx, ny) && weightMap[x][ny] != -1 && weightMap[nx][ny] != -1 && weightMap[newCoordinate.x][newCoordinate.y] > weightMap[nx][ny])
 				{
 					newCoordinate = new Coordinate(nx,ny);
 				}
@@ -161,7 +155,7 @@ public class AnimatedCreep extends Thread
 			{
 				move();
 			}
-			Thread.sleep((long)(100));
+			Thread.sleep((long)(50));
 		}
 		
 		
@@ -175,9 +169,8 @@ public class AnimatedCreep extends Thread
 		int x = moveCoordinate.x;
 		int y = moveCoordinate.y;
 		
-		grid[currentLocation.x][currentLocation.y].color = Color.WHITE;	
-		grid[x][y].color = Color.GREEN;
-		
+		gridController.updateCell(currentLocation.x, currentLocation.y, Color.WHITE);
+		gridController.updateCell(x, y, Color.GREEN);	
 	
 		currentLocation.x = x;
 		currentLocation.y = y;
@@ -198,7 +191,7 @@ public class AnimatedCreep extends Thread
 		{
 			int neighbor_x = directions[i].x;
 			int neighbor_y = directions[i].y;
-			if(neighbor_x < 0 || neighbor_y < 0 || neighbor_x >= gridSizeX || neighbor_y >= gridSizeY || !grid[neighbor_x][neighbor_y].alive){
+			if(!gridController.confirmValidCoordinate(neighbor_x, neighbor_y) || !gridController.getCellStatus(neighbor_x, neighbor_y)){
 				continue;
 			}
 			validNext.add(directions[i]);
@@ -206,12 +199,11 @@ public class AnimatedCreep extends Thread
 		
 		int randomIndex = random.nextInt(validNext.size() - 0) + 0;
 		Coordinate randomCoordinate = validNext.get(randomIndex);
-		grid[x][y].color = Color.WHITE;
+		gridController.updateCell(x, y, Color.WHITE);
 		x = randomCoordinate.x;
 		y = randomCoordinate.y;
 		
-		grid[x][y].color = Color.GREEN;
-		
+		gridController.updateCell(x, y, Color.GREEN);
 	
 		currentLocation.x = x;
 		currentLocation.y = y;
