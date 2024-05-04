@@ -1,9 +1,7 @@
 package main.java.controllers;
 
 import classes.Coordinate;
-import classes.EndingGridElement;
 import classes.GridElement;
-import classes.StartingGridElement;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -118,12 +116,16 @@ public class GridController
 	
 	public boolean resetStartLocation()
 	{
+		if(startLocation == null)
+			return true;
 		this.startLocation.x = -1;
 		this.startLocation.y = -1;
 		return true;
 	}
 	public boolean resetEndLocation()
 	{
+		if(endLocation == null)
+			return true;
 		this.endLocation.x = -1;
 		this.endLocation.y = -1;
 		return true;

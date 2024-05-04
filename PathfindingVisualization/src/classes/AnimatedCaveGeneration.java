@@ -48,6 +48,10 @@ public class AnimatedCaveGeneration extends Thread
 		
 		double chanceToStartAlive = .45;
 
+		
+		gridController.resetStartLocation();
+		gridController.resetEndLocation();
+		
 		for(int y = 0; y < gridSizeY; y++)
 		{
 			for(int x = 0; x < gridSizeX; x++)
@@ -72,6 +76,9 @@ public class AnimatedCaveGeneration extends Thread
 			Thread.sleep((long)100);
 			doObstacleStep();
 		}
+		
+		
+		
 		System.out.println("Finished obstacle generation");
 	}
 	
