@@ -34,8 +34,8 @@ public class AnimationTestController
 	private Button showBfsButton;
 	@FXML
 	private Button antButton;
-	@FXML
-	private Label antCount;
+//	@FXML
+//	private Label antCount;
 	
 	private int antCounter = 0;
 	
@@ -64,7 +64,7 @@ public class AnimationTestController
 	public void initialize()
 	{
 
-		antCount.setText("");
+//		antCount.setText("");
 		selectedNode = obstacleNodeInfo;
 		disabledNodeList = new ArrayList<Node>();
 		disabledNodeList.add(showDfsButton);
@@ -234,7 +234,7 @@ public class AnimationTestController
 			activeThreads.add(animatedCreep);
 
 			antCounter++;
-			antCount.setText("Ant Count: " + antCounter);
+//			antCount.setText("Ant Count: " + antCounter);
 		}
 		else
 		{
@@ -258,7 +258,7 @@ public class AnimationTestController
 					}
 					if(antCounter == 0)
 					{
-						antCount.setText("");
+//						antCount.setText("");
 					}
 				}
 			}

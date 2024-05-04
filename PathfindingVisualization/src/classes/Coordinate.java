@@ -29,8 +29,9 @@ public class Coordinate
 	
 	public boolean equals(Coordinate compare)
 	{
+		if(compare == null)
+			return false;
 		return compare.x == x && compare.y == y;
-		
 	}
 	
 }

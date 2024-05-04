@@ -24,16 +24,16 @@ public class GridController
 	private GraphicsContext graphicsContext;
 
 
-	public static final int GRID_SIZE_X = 200;
-	public static final int GRID_SIZE_Y = 200;
+	public static final int GRID_SIZE_X = 50;
+	public static final int GRID_SIZE_Y = 50;
 	
 	private double RECT_WIDTH = canvasWidth / ((double)GRID_SIZE_X);
 	private double RECT_HEIGHT = canvasHeight / ((double)GRID_SIZE_Y);
 
 	private GridElement[][] grid;
 	
-	private StartingGridElement startLocation;
-	private EndingGridElement endLocation;
+	private GridElement startLocation;
+	private GridElement endLocation;
 	
 	// i want the grid and the starting locations to be updated and stuff like that
 	// have everyone reference this class and then update stuff through its methods
@@ -59,11 +59,11 @@ public class GridController
 	{
 		return this.graphicsContext;
 	}
-	public StartingGridElement getStartLocation()
+	public GridElement getStartLocation()
 	{
 		return this.startLocation;
 	}
-	public EndingGridElement getEndLocation()
+	public GridElement getEndLocation()
 	{
 		return this.endLocation;
 	}
@@ -81,23 +81,41 @@ public class GridController
 		this.grid = null;
 	}
 	
-	public boolean setStartLocation(StartingGridElement start)
+	/*
+	 * NOTE:
+	 * Changed the StartingGridElement to GridElement
+	 * This may cause issues down the line with detecting finished states or something down the line
+	 */
+	public boolean setStartLocation(GridElement start)
 	{
 		if(start == null)
 			return false;
+		if(getCell(start.x, start.y) == null)
+			return false;
+		
 		this.startLocation = start;
-		updateCell( start.x, start.y, start.color, start.alive);
+		updateCell( start.x, start.y, Color.BLUE, true);
 		return true;
 	}
 	
-	public boolean setEndLocation(EndingGridElement end)
+	/*
+	 * NOTE:
+	 * Changed the EndingGridElement to GridElement
+	 * This may cause issues down the line with detecting finished states or something down the line
+	 * Having a dedicated element for start and end seemed stupid and should just be checked on generation or something
+	 */
+	public boolean setEndLocation(GridElement end)
 	{
 		if(end == null)
 			return false;
+
+		if(getCell(end.x, end.y) == null)
+			return false;
 		this.endLocation = end;
-		updateCell( end.x, end.y, end.color, end.alive );
+		updateCell( end.x, end.y, Color.RED, true);
 		return true;
 	}
+	
 	public boolean resetStartLocation()
 	{
 		this.startLocation.x = -1;
@@ -224,7 +242,7 @@ public class GridController
 	{
 		graphicsContext.clearRect(0, 0, canvasWidth, canvasHeight);
 		if(startLocation != null)
-			updateCell( startLocation.x, startLocation.y, startLocation.color, startLocation.alive);
+			updateCell( startLocation.x, startLocation.y, Color.BLUE, true);
 		
 		for(int y = 0; y < GRID_SIZE_Y; y++)
 		{
