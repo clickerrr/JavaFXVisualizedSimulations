@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.stage.Stage?>
+
+<Stage onCloseRequest="#closeRequested" resizable="false" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <scene>
+        <Scene>
+            <AnchorPane prefHeight="600.0" prefWidth="600.0">
+            <children>
+               <BorderPane prefHeight="750.0" prefWidth="750.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <top>
+                     <Canvas fx:id="canvas" height="600.0" onMouseClicked="#handleCanvasClick" onMouseDragged="#handleCanvasDrag" width="600.0" BorderPane.alignment="CENTER">
+                        <BorderPane.margin>
+                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                        </BorderPane.margin></Canvas>
+                  </top>
+                  <bottom>
+                     <BorderPane prefHeight="76.0" prefWidth="621.0" BorderPane.alignment="CENTER">
+                        <center>
+                           <VBox BorderPane.alignment="CENTER">
+                              <children>
+                                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                                    <children>
+                                       <Button mnemonicParsing="false" onAction="#generateObstacles" text="Generate Obstacles">
+                                          <HBox.margin>
+                                             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                          </HBox.margin>
+                                       </Button>
+                                       <Button fx:id="showDfsButton" disable="true" mnemonicParsing="false" onAction="#showDFS" text="Show DFS">
+                                          <HBox.margin>
+                                             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                          </HBox.margin>
+                                       </Button>
+                                       <Button fx:id="showBfsButton" disable="true" mnemonicParsing="false" onAction="#showBFS" text="Show BFS" />
+                                       <Button fx:id="antButton" disable="true" mnemonicParsing="false" onAction="#ant" text="Ant!">
+                                          <HBox.margin>
+                                             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                          </HBox.margin>
+                                       </Button>
+                                       <CheckBox fx:id="wallBreaker" disable="true" mnemonicParsing="false" text="Wallbreaker" />
+                                    </children>
+                                 </HBox>
+                                 <HBox alignment="CENTER">
+                                    <children>
+                                       <VBox alignment="CENTER" prefHeight="90.0" prefWidth="102.0">
+                                          <children>
+                                             <Label text="Simulation Steps" />
+                                             <Spinner fx:id="simStepsSpinner" onMouseClicked="#handleSpinnerUpdate" prefHeight="26.0" prefWidth="55.0">
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </VBox.margin>
+                                             </Spinner>
+                                          </children>
+                                       </VBox>
+                                       <VBox alignment="CENTER" prefHeight="90.0" prefWidth="102.0">
+                                          <children>
+                                             <Label text="Death Minimum" />
+                                             <Spinner fx:id="deathMinSpinner" onMouseClicked="#handleSpinnerUpdate" prefHeight="26.0" prefWidth="55.0">
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </VBox.margin>
+                                             </Spinner>
+                                          </children>
+                                       </VBox>
+                                       <VBox alignment="CENTER" prefHeight="90.0" prefWidth="102.0">
+                                          <children>
+                                             <Label text="Birth Minimum" />
+                                             <Spinner fx:id="birthMinSpinner" onMouseClicked="#handleSpinnerUpdate" prefHeight="26.0" prefWidth="55.0">
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </VBox.margin>
+                                             </Spinner>
+                                          </children>
+                                       </VBox>
+                                    </children>
+                                 </HBox>
+                                 <HBox alignment="CENTER">
+                                    <children>
+                                       <VBox alignment="CENTER" prefHeight="48.0" prefWidth="46.0">
+                                          <children>
+                                             <Rectangle fx:id="obstacleNode" arcHeight="5.0" arcWidth="5.0" height="40.0" onMouseClicked="#handleNodeSelection" stroke="#00ff26" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="2.0" width="40.0">
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                                                </VBox.margin>
+                                             </Rectangle>
+                                             <Label alignment="CENTER" contentDisplay="CENTER" text="Obstacle" />
+                                          </children>
+                                       </VBox>
+                                       <VBox alignment="CENTER">
+                                          <children>
+                                             <Rectangle fx:id="redNode" arcHeight="5.0" arcWidth="5.0" fill="RED" height="40.0" onMouseClicked="#handleNodeSelection" stroke="#00ff26" strokeType="INSIDE" strokeWidth="0.0" width="40.0">
+                                                <VBox.margin>
+                                                   <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                                                </VBox.margin>
+                                             </Rectangle>
+                                             <Label text="Red" />
+                                          </children>
+                                       </VBox>
+                                    </children>
+                                 </HBox>
+                              </children>
+                           </VBox>
+                        </center>
+                     </BorderPane>
+                  </bottom>
+               </BorderPane>
+            </children></AnchorPane>
+        </Scene>
+    </scene>
+</Stage>

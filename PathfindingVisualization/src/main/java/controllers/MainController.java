@@ -3,7 +3,7 @@
 //import java.util.Arrays;
 //
 //import classes.Coordinate;
-//import enums.NodeType;
+//import classes.NodeType;
 //import javafx.event.Event;
 //import javafx.fxml.FXML;
 //import javafx.scene.canvas.Canvas;
