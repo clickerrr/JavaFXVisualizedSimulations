@@ -32,7 +32,6 @@ public class AnimatedCaveGeneration extends Thread
 		this.startLocation = startLocation;
 		this.endLocation = endLocation;
 		this.random = new Random();
-		
 	}
 	@Override
 	public void run()
@@ -74,9 +73,6 @@ public class AnimatedCaveGeneration extends Thread
 					grid[x][y].alive = false;
 					grid[x][y].color = Color.BLACK;
 				}
-					
-				
-
 			}
 		
 		}

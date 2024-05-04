@@ -1,12 +1,12 @@
 package main.java.controllers;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import classes.AnimatedBFS;
 import classes.AnimatedCaveGeneration;
 import classes.AnimatedCreep;
 import classes.AnimatedDFS;
+import classes.CanvasCoordinate;
 import classes.Coordinate;
 import classes.GridElement;
 import classes.NodeType;
@@ -15,9 +15,9 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.input.MouseEvent;
@@ -34,6 +34,10 @@ public class AnimationTestController
 	private Button showBfsButton;
 	@FXML
 	private Button antButton;
+	@FXML
+	private Label antCount;
+	
+	private int antCounter = 0;
 	
 	@FXML
 	private CheckBox wallBreaker;
@@ -43,28 +47,14 @@ public class AnimationTestController
 	
 	private ArrayList<Node> disabledNodeList;
 	
-	private double W;
-	private double H;
-	
-	private GraphicsContext gc;
-
-	private double rectWidth;
-	private double rectHeight;
-	
-	private int gridSizeX;
-	private int gridSizeY;
-
-	private GridElement[][] grid;
-	private Coordinate startLocation;
-	private Coordinate endLocation;
-	
+	private final int MAX_THREADS = 50;	
 	private ArrayList<Thread> activeThreads;
 	private NodeType selectedNode;
 	private NodeType obstacleNodeInfo = new NodeType("obstacle", Color.BLACK);
 	private NodeType redNodeInfo = new NodeType("red", Color.RED);
 	
+	public GridController gridController;
 	
-	private Random random;
 	
 	@FXML
 	private Spinner<Integer> simStepsSpinner, deathMinSpinner, birthMinSpinner;
@@ -73,6 +63,8 @@ public class AnimationTestController
 	@FXML
 	public void initialize()
 	{
+
+		antCount.setText("");
 		selectedNode = obstacleNodeInfo;
 		disabledNodeList = new ArrayList<Node>();
 		disabledNodeList.add(showDfsButton);
@@ -89,37 +81,36 @@ public class AnimationTestController
 		birthMinSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 3));
 		birthMinSpinner.increment();
 		
-		this.random = new Random();
-		this.W = canvas.getWidth();
-        this.H = canvas.getHeight();
-        
-		gridSizeX = 100;
-		gridSizeY = 100;
-
-		rectWidth = W / gridSizeX;
-		rectHeight = H / gridSizeY;
+		this.gridController = GridController.getInstance();
 		
-		grid = new GridElement[gridSizeX][gridSizeY];
-		for(int y = 0; y < gridSizeY; y++)
+		gridController.setCanvasWidth(canvas.getWidth());
+		gridController.setCanvasHeight(canvas.getHeight());
+
+
+
+        GridElement[][] grid = new GridElement[GridController.GRID_SIZE_X][GridController.GRID_SIZE_Y];
+		for(int y = 0; y < GridController.GRID_SIZE_Y; y++)
 		{
-			for(int x = 0; x < gridSizeX; x++)
+			for(int x = 0; x < GridController.GRID_SIZE_X; x++)
 			{
-				grid[x][y] = new GridElement(x,y,Color.WHITE, true);
+				CanvasCoordinate canvasCoor = new CanvasCoordinate( (double)x * gridController.getRectWidth(),
+				(double)y * gridController.getRectHeight());
+				grid[x][y] = new GridElement(x,y,Color.WHITE, true, canvasCoor);
 			}
 		}
 		
+		gridController.setGrid(grid);
+		
 		activeThreads = new ArrayList<Thread>();
-		
-		this.startLocation = new Coordinate();
-		this.endLocation = new Coordinate();
-		
-		this.gc = canvas.getGraphicsContext2D();
+
+		gridController.setGraphicsContext(canvas.getGraphicsContext2D());
         
 		AnimationTimer timer = new AnimationTimer() {
 	        @Override
-	        public void handle(long now) {
+	        public void handle(long now) 
+	        {
 	            
-	        	refreshGrid();
+	        	gridController.refreshGrid();
 	        	
 	        }
 	    };
@@ -139,7 +130,7 @@ public class AnimationTestController
 	private void generateObstacles(Event e) throws InterruptedException
 	{
 		interruptAllThreads();
-		AnimatedCaveGeneration animatedFill = new AnimatedCaveGeneration("Thread 1", grid, gridSizeX, gridSizeY, startLocation, endLocation);
+		AnimatedCaveGeneration animatedFill = new AnimatedCaveGeneration("Thread 1");
 		animatedFill.start();	
 		activeThreads.add(animatedFill);
 
@@ -157,13 +148,13 @@ public class AnimationTestController
 		if(wallBreaker.isSelected())
 		{
 			
-			Coordinate grid = convertCanvasPosToGrid(x, y);
+			Coordinate grid = gridController.convertCanvasPosToGrid(x, y);
 			if( grid != null)
 			{
-				wallBreaker(grid.x, grid.y);	
+				gridController.wallBreaker(grid.x, grid.y);
 			}
 		}
-
+		
 	}
 	
 	@FXML
@@ -175,44 +166,19 @@ public class AnimationTestController
 		double y = event.getY();
 
 
-		Coordinate grid = convertCanvasPosToGrid(x, y);
+		Coordinate grid = gridController.convertCanvasPosToGrid(x, y);
 		if( grid != null)
 		{
-			painter(grid.x, grid.y);	
-		}
-
-	}
-	
-	private void wallBreaker(int x, int y)
-	{
-		if(!grid[x][y].alive)
-		{
-			grid[x][y].alive = true;
-			grid[x][y].color = Color.WHITE;
-		}
-	}
-	
-	private void painter(int x, int y)
-	{
-		if(!grid[x][y].color.equals(selectedNode.nodeColor) && grid[x][y].alive)
-		{
-			grid[x][y].color = selectedNode.nodeColor;
-			if(grid[x][y].color.equals(Color.BLACK))
+			if(wallBreaker.isSelected())
 			{
-				grid[x][y].alive = false;
+				gridController.wallBreaker(grid.x, grid.y);	
+				return;
 			}
+			gridController.painter(grid.x, grid.y, selectedNode.nodeColor);	
 		}
 
 	}
 	
-	private Coordinate convertCanvasPosToGrid(double x, double y)
-	{
-
-		Coordinate gridPos = new Coordinate((int)(x / rectWidth), (int)(y / rectHeight));
-		if( gridPos.x >= gridSizeX || gridPos.x < 0 || gridPos.y >= gridSizeY || gridPos.y < 0)
-			return null;
-		return gridPos;
-	}
 
 	@FXML
 	private void handleNodeSelection(Event e)
@@ -222,18 +188,18 @@ public class AnimationTestController
 		
 		switch(source.getId())
 		{
-		case "obstacleNode":
-			this.selectedNode = obstacleNodeInfo;
-
-			this.redNode.setStrokeWidth(0);
-
-			this.obstacleNode.setStrokeWidth(2);
-			break;
-		case "redNode":
-			this.selectedNode = redNodeInfo;
-			this.obstacleNode.setStrokeWidth(0);
-			this.redNode.setStrokeWidth(2);
-			break;
+			case "obstacleNode":
+				this.selectedNode = obstacleNodeInfo;
+	
+				this.redNode.setStrokeWidth(0);
+	
+				this.obstacleNode.setStrokeWidth(2);
+				break;
+			case "redNode":
+				this.selectedNode = redNodeInfo;
+				this.obstacleNode.setStrokeWidth(0);
+				this.redNode.setStrokeWidth(2);
+				break;
 		}
 		System.out.println(source.getId());
 	}
@@ -242,9 +208,9 @@ public class AnimationTestController
 	private void showDFS(Event e)
 	{
 		interruptAllThreads();
-		startLocation.print();
-		endLocation.print();
-		AnimatedDFS animatedDFS = new AnimatedDFS("DFS Thread", grid, gridSizeX, gridSizeY, startLocation, endLocation);
+		gridController.getStartLocation().print();
+		gridController.getStartLocation().print();
+		AnimatedDFS animatedDFS = new AnimatedDFS("DFS Thread");
 		animatedDFS.start();
 		activeThreads.add(animatedDFS);
 	}
@@ -253,7 +219,7 @@ public class AnimationTestController
 	private void showBFS(Event e)
 	{
 		interruptAllThreads();
-		AnimatedBFS animatedBFS = new AnimatedBFS("DFS Thread", grid, gridSizeX, gridSizeY, startLocation, endLocation);
+		AnimatedBFS animatedBFS = new AnimatedBFS("BFS Thread");
 		animatedBFS.start();
 		activeThreads.add(animatedBFS);
 	}
@@ -261,57 +227,51 @@ public class AnimationTestController
 	@FXML
 	private void ant(Event e)
 	{
-		AnimatedCreep animatedCreep = new AnimatedCreep("Ant", grid, gridSizeX, gridSizeY, startLocation, endLocation);
-		animatedCreep.start();
-		activeThreads.add(animatedCreep);
-	}
-	
-	public void refreshGrid()
-	{
-		gc.clearRect(0,0,W,H);
-		
-		for(int y = 0; y < gridSizeY; y++)
+		if(activeThreads.size() <= MAX_THREADS)
 		{
-			for(int x = 0; x < gridSizeX; x++)
-			{
-				gc.setFill(grid[x][y].color);
+			AnimatedCreep animatedCreep = new AnimatedCreep("Ant");
+			animatedCreep.start();
+			activeThreads.add(animatedCreep);
 
-				if(startLocation.x != -1 && startLocation.y != -1)
-				{
-					grid[startLocation.x][startLocation.y].color = Color.BLUE;	
-				}
-				
-				gc.fillRect(grid[x][y].x * rectWidth, grid[x][y].y * rectHeight, rectWidth, rectHeight);
-			}
+			antCounter++;
+			antCount.setText("Ant Count: " + antCounter);
 		}
-	}
-	
-	
-	
-	
-	public void printGrid()
-	{
-		for(int y= 0; y < gridSizeY; y++)
+		else
 		{
-			System.out.print("[ ");
-			for(int x = 0; x < gridSizeX; x++)
-			{
-				if(!grid[x][y].alive)
-					System.out.print("1 ");
-				else
-					System.out.print("0 ");
-			}
-
-			System.out.println("]");
+			antButton.setDisable(true);
 		}
-		
 	}
 	
 	public void interruptAllThreads()
 	{
 		System.out.println("Interrupting all threads");
-		activeThreads.forEach(thread -> { thread.interrupt(); });
+		activeThreads.forEach(thread -> 
+		{ 
+			
+			try
+			{
+				if(thread.getClass() == AnimatedCreep.class)
+				{
+					if(antCounter > 0)
+					{
+						antCounter--;
+					}
+					if(antCounter == 0)
+					{
+						antCount.setText("");
+					}
+				}
+			}
+			catch(ClassCastException e)
+			{
+				
+			}
+			thread.interrupt(); 
+			
+		
+		});
 	}
+	
 	@FXML
 	public void closeRequested(Event e)
 	{
